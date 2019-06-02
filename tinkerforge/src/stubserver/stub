@@ -1,0 +1,43 @@
+#!/bin/bash
+
+if [ -z "$CONFIG" ]; then
+    CONFIG=Debug
+fi
+
+# default file
+FILE=homestation.properties
+OPT=
+
+# evaluate arguments
+while [ ! -z "$1" ]; do
+    case "$1" in
+	-[h?])
+	    echo
+	    echo "Usage: stub {-vg} {-rq} device_config.properties"
+	    echo
+	    echo "-rq    log request data"
+	    echo "-vg    start within valgrind"
+	    echo
+	    exit 1
+	    ;;
+	-rq)
+	    OPT="$OPT -rq"
+	    ;;
+	-vg)
+	    VG="valgrind --leak-check=full --show-reachable=yes --log-file=vg.log "
+	    ;;
+	*) FILE=$1
+	    ;;
+    esac
+    shift
+done
+
+# Called from base directory?
+if [ -d src/stubserver ]; then
+    cd src/stubserver
+fi
+
+export LD_LIBRARY_PATH=../../lib/$CONFIG
+
+# echo $VG ../../bin/$CONFIG/stubserver -p 4225 $OPT -d $FILE
+$VG ../../bin/$CONFIG/stubserver -p 4225 $OPT -d $FILE

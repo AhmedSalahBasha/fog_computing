@@ -1,0 +1,57 @@
+==27533== Memcheck, a memory error detector
+==27533== Copyright (C) 2002-2015, and GNU GPL'd, by Julian Seward et al.
+==27533== Using Valgrind-3.11.0 and LibVEX; rerun with -h for copyright info
+==27533== Command: ../../bin/Debug/stubserver -p 4225 -rq -d devices.properties
+==27533== Parent PID: 27532
+==27533== 
+==27533== Invalid read of size 1
+==27533==    at 0x43A377: utils::Socket::waitForClient() (Socket.cpp:118)
+==27533==    by 0x4057A3: stubserver::runServer(char const*, int, char const*, bool) (stubserver.cpp:165)
+==27533==    by 0x405324: main (main.cpp:72)
+==27533==  Address 0x6494184 is 20 bytes inside a block of size 24 free'd
+==27533==    at 0x4C2F24B: operator delete(void*) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==27533==    by 0x43A2CD: utils::Socket::~Socket() (Socket.cpp:90)
+==27533==    by 0x405513: stubserver::stopServer() (stubserver.cpp:89)
+==27533==    by 0x4053B8: stubserver::sigTermHandler(int, siginfo_t*, void*) (stubserver.cpp:49)
+==27533==    by 0x514B38F: ??? (in /lib/x86_64-linux-gnu/libpthread-2.23.so)
+==27533==    by 0x5147706: pthread_cond_timedwait@@GLIBC_2.3.2 (pthread_cond_timedwait.S:223)
+==27533==    by 0x43E00D: __gthread_cond_timedwait(pthread_cond_t*, pthread_mutex_t*, timespec const*) (gthr-default.h:871)
+==27533==    by 0x43F3FB: std::cv_status std::condition_variable::__wait_until_impl<std::chrono::duration<long, std::ratio<1l, 1000000000l> > >(std::unique_lock<std::mutex>&, std::chrono::time_point<std::chrono::_V2::system_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> > > const&) (condition_variable:165)
+==27533==    by 0x43EF3C: std::cv_status std::condition_variable::wait_until<std::chrono::duration<long, std::ratio<1l, 1000000000l> > >(std::unique_lock<std::mutex>&, std::chrono::time_point<std::chrono::_V2::system_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> > > const&) (condition_variable:105)
+==27533==    by 0x43E561: utils::AsyncTask::shouldFinish(std::chrono::time_point<std::chrono::_V2::system_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> > > const&) (AsyncTask.cpp:105)
+==27533==    by 0x40C384: stubserver::BrickThread::run() (BrickThread.cpp:51)
+==27533==    by 0x43E370: utils::AsyncTask::callRunMethod() (AsyncTask.cpp:67)
+==27533==  Block was alloc'd at
+==27533==    at 0x4C2E0EF: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==27533==    by 0x405770: stubserver::runServer(char const*, int, char const*, bool) (stubserver.cpp:153)
+==27533==    by 0x405324: main (main.cpp:72)
+==27533== 
+==27533== 
+==27533== HEAP SUMMARY:
+==27533==     in use at exit: 72,704 bytes in 1 blocks
+==27533==   total heap usage: 5,541 allocs, 5,540 frees, 644,283 bytes allocated
+==27533== 
+==27533== 72,704 bytes in 1 blocks are still reachable in loss record 1 of 1
+==27533==    at 0x4C2DB8F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==27533==    by 0x53E0EFF: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.21)
+==27533==    by 0x40106C9: call_init.part.0 (dl-init.c:72)
+==27533==    by 0x40107DA: call_init (dl-init.c:30)
+==27533==    by 0x40107DA: _dl_init (dl-init.c:120)
+==27533==    by 0x4000C69: ??? (in /lib/x86_64-linux-gnu/ld-2.23.so)
+==27533==    by 0x5: ???
+==27533==    by 0xFFEFFFF72: ???
+==27533==    by 0xFFEFFFF8D: ???
+==27533==    by 0xFFEFFFF90: ???
+==27533==    by 0xFFEFFFF95: ???
+==27533==    by 0xFFEFFFF99: ???
+==27533==    by 0xFFEFFFF9C: ???
+==27533== 
+==27533== LEAK SUMMARY:
+==27533==    definitely lost: 0 bytes in 0 blocks
+==27533==    indirectly lost: 0 bytes in 0 blocks
+==27533==      possibly lost: 0 bytes in 0 blocks
+==27533==    still reachable: 72,704 bytes in 1 blocks
+==27533==         suppressed: 0 bytes in 0 blocks
+==27533== 
+==27533== For counts of detected and suppressed errors, rerun with: -v
+==27533== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

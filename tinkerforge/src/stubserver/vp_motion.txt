@@ -1,0 +1,15 @@
+# Example to simulate some input value change: column 0 is a time value
+# and column 1 the sensor value.
+#
+# The time values are 'from' values:
+# -> the first value (0) is valid from 0..3999
+# -> the second value (1) is valid from 4000..9999
+
+0     0
+4000  1
+10000 0
+20000 1
+25000 0
+35000 1
+45000 0
+60000 0
