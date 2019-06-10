@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
     # Note: The air pressure callback is only called every 500 ms
     # if the air pressure has changed since the last call!
-    b.set_air_pressure_callback_period(500)
+    b.set_air_pressure_callback_period(1000)
 
     # Send file to cloud
     sched = BackgroundScheduler()

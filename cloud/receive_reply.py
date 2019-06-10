@@ -18,9 +18,7 @@ def get_air_pressure_stats(listofvalues):
     for val in listofvalues:
         air_pressure_list.append(float(val[1]))
     mean_val = round(Decimal(mean(air_pressure_list)), 3)
-    #stdev_val = round(Decimal(stdev(air_pressure_list)), 3)
-    #max_val = round(Decimal(max(air_pressure_list)), 3)
-    #min_val = round(Decimal(min(air_pressure_list)), 3)
+
     return mean_val
 
 
@@ -30,7 +28,12 @@ def create_prediction_msg(filename):
         for line in file:
             listofvalues.append(line.split('|'))
     mean_val = get_air_pressure_stats(listofvalues)
-    
+    return_msg = get_msg(mean_val)
+        
+    return return_msg
+
+
+def get_msg(mean_val):
     return_msg = 'Unknown Pressure Value!'
     if mean_val >= 1086:
         return_msg = 'Highest Ever Recorded'
@@ -44,21 +47,13 @@ def create_prediction_msg(filename):
         return_msg = 'CAT 1 Hurricane or a very intense mid-latitude cyclone'
     elif mean_val >= 950:
         return_msg = 'CAT 3 Hurricane'
-    elif mean_val >= 980:
+    elif mean_val >= 870:
         return_msg = 'Lowest Ever Recorded (not including tornadoes)'
         
     return return_msg
 
-
-def send_prediction_msg_to_local(filename):
-    return_msg = create_prediction_msg(filename)
-    conn.send(return_msg.encode())
-    print("Prediction message has been sent sussessfully!")
-
 keep_trying_to_connect = True
-
 while keep_trying_to_connect:
-    
     port = 5556    # Reserve a port for your service every new transfer wants a new port$
     
     s = socket.socket()        # Re-Create a socket object
@@ -79,15 +74,11 @@ while keep_trying_to_connect:
         filename = 'air_pressure_data_' + str(int(time.time()))
         with open(filename, 'wb') as f:
             f.write(data)      # write data to a file
-            #confirm_msg = 'MsgFromCloud:  File Has Been Received Succesfully!'
-            #conn.send(confirm_msg.encode())
             
         print('Successfully get the file')
         return_msg = create_prediction_msg(filename)
         conn.send(return_msg.encode())
         print("Prediction message has been sent sussessfully!")
-        
-
 
 conn.close()
 print('connection closed')
