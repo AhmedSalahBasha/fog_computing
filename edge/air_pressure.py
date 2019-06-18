@@ -29,9 +29,11 @@ UID = "fGg" # UID of Air Pressure
 log_file_name = '/home/basha/Desktop/FC_Project/fog_computing/edge/logfile'
 
 
-cloud_host = "52.211.232.41"  #I p address that the TCPServer  is there 
+cloud_host = "34.244.127.77"  #Ip address that the TCPServer is there 
 cloud_port = 5556             # Reserve a port for your service every new transfer wants a new por$
 
+conf_msgs_list = []
+sent_msgs_list = []
 
 def has_handle(fpath):
     for proc in psutil.process_iter():
@@ -53,12 +55,13 @@ def send_log_file_to_cloud():
                 f = open(file,'rb')
                 lines = f.read()
                 f.close()
-                print(lines)
                 s = socket.socket()             # Create a socket object
                 s.connect((cloud_host, cloud_port))
                 s.send(lines)
+                sent_msgs_list.append(lines)
                 print('Done sending at:  ', time.ctime())
                 conf_msg = s.recv(1024)
+                conf_msgs_list.append(conf_msg)
                 print('===>>> MsgFromCloud:  ' + conf_msg.decode())
                 mkdircdm = 'mkdir -p sent_files'
                 os.system(mkdircdm)
@@ -77,15 +80,17 @@ def send_log_file_to_cloud():
                 connected = True
                 print("re-connection successful")
             except socket.error:
-                time.sleep(1) 
+                time.sleep(1)
     finally:
-        print(logfiles)
-        print('Len ==>> ', len(logfiles))
+        print('================================')
+        print('[1] Number of Sent Files to Cloud:  ', len(sent_msgs_list))
+        print('[2] Number of Received Messages From Cloud:  ', len(conf_msgs_list))
+
     
 
 # Callback function for air pressure callback
 def cb_air_pressure(air_pressure):
-    #print("Air Pressure: " + str(air_pressure/1000.0) + " mbar")
+    print("Air Pressure: " + str(air_pressure/1000.0) + " mbar")
     logger.info("|" + str(air_pressure/1000.0))
 
 if __name__ == "__main__":
@@ -99,7 +104,7 @@ if __name__ == "__main__":
         # set TimedRotatingFileHandler for root
         formatter = logging.Formatter('%(asctime)s %(message)s')
         # use very short interval for this example, typical 'when' would be 'midnight' and no explicit interval
-        handler = TimedRotatingFileHandler(log_file_name, when="S", interval=9, backupCount=100)
+        handler = TimedRotatingFileHandler(log_file_name, when="S", interval=4, backupCount=100)
         handler.setFormatter(formatter)
         logger = logging.getLogger('root') # or pass string to give it a name
         logger.addHandler(handler)
@@ -124,8 +129,9 @@ if __name__ == "__main__":
 
     # Send file to cloud
     sched = BackgroundScheduler()
-    sched.add_job(send_log_file_to_cloud, 'interval', seconds = 10, max_instances=1000)
+    sched.add_job(send_log_file_to_cloud, 'interval', seconds = 5, max_instances=1000)
     sched.start()
     
+
     input("Press key to exit\n") # Use input() in Python 3
     ipcon.disconnect()
